@@ -7,7 +7,7 @@ const port = 3000
 
 app.use(express.json())
 
-let etiquetas = [] //aqui será a variavel que irá armazenar as etiquetas
+let etiquetas = {} //aqui será a variavel que irá armazenar as etiquetass
 
 
 const carregarPlanilha = () => { //função para carregar planilha
@@ -42,9 +42,24 @@ app.post('/upload', upload.single('planilha'), (req, res) => {
 })
 
 
-app.get('/', (req, res) => { // get de todas as etiquetas
+app.get('/etiquetas', (req, res) => { // get de todas as etiquetas
     res.status(200).json(etiquetas)
 })
+
+app.put('/etiquetas/:Customer', (req, res) => {
+    const Customer = req.params.Customer
+    const novaEtiqueta = req.body
+    
+    const index = etiquetas.findIndex((etiqueta) => etiqueta.Customer == Customer)
+  
+    if (index === -1) {
+      return res.status(404).json({ message: 'Etiqueta não encontrada.' })
+    }
+  
+    etiquetas[index] = { ...etiquetas[index], ...novaEtiqueta }
+    res.status(200).json({ message: 'Etiqueta atualizada com sucesso.', etiqueta: etiquetas[index] })
+})
+  
 
 app.listen(port, () => {
     console.log(`Rodando em: http://localhost:${port}`)
